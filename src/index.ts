@@ -415,6 +415,14 @@ export const jobSchema = z
   .object({
     "job-post": jobPostSchema,
 
+    /**
+     * External destination the "Solliciteer" button points to.
+     * Distinct from `job-post.url` (the canonical posting page per
+     * schema.org) because the two may differ and conversion tracking
+     * must target the real apply destination.
+     */
+    applyUrl: z.string().url().optional(),
+
     images: z.array(imageRef).default([]),
     video: videoSchema.optional(),
     testimonials: z.array(testimonialSchema).default([]),
