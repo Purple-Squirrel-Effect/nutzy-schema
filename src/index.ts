@@ -22,71 +22,7 @@ const imageRef = z.object({
   alt: z.string().optional(),
 });
 
-// ── Company ─────────────────────────────────────────────────────
-
-const companyVideoSchema = z.object({
-  thumbnail: z.string(),
-  title: z.string(),
-  presenter: z.string(),
-});
-
-const companyPerkSchema = z.object({
-  icon: z.string(),
-  text: z.string(),
-  color: z.string(),
-});
-
-const companyTeamMemberSchema = z.object({
-  name: z.string(),
-  role: z.string(),
-  avatar: z.string(),
-});
-
-const companyColorsSchema = z.object({
-  primary: z.string(),
-  secondary: z.string(),
-  primaryLight: z.string().optional(),
-  tertiary: z.string().optional(),
-  surface: z.string().optional(),
-});
-
-export const companySchema = z
-  .object({
-    name: z.string(),
-    slug: z.string(),
-    location: z
-      .string()
-      .nullish()
-      .transform((v) => v ?? ""),
-    logo: z.string(),
-    banner: z.string().optional(),
-    heroBackgroundImage: z.string().optional(),
-    description: z
-      .string()
-      .nullish()
-      .transform((v) => v ?? ""),
-    employees: z
-      .string()
-      .nullish()
-      .transform((v) => v ?? ""),
-    rating: z.string().optional(),
-    mission: z
-      .string()
-      .nullish()
-      .transform((v) => v ?? ""),
-    videos: z.array(companyVideoSchema).default([]),
-    perks: z.array(companyPerkSchema).default([]),
-    team: z.array(companyTeamMemberSchema).default([]),
-    live: z.boolean().optional(),
-    website: z.string().optional(),
-    company_uuid: z.string().optional(),
-    colors: companyColorsSchema.optional(),
-  })
-  .strict();
-
-export type CompanyFrontmatter = z.infer<typeof companySchema>;
-
-// ── Schema.org building blocks (typed per https://schema.org/JobPosting) ──
+// ── Schema.org building blocks (typed per https://schema.org) ──
 
 const countrySchema = z
   .object({
@@ -154,28 +90,6 @@ const contactPointSchema = z
   })
   .strict();
 
-const organizationSchema = z
-  .object({
-    "@type": z.literal("Organization"),
-    name: z.string(),
-    sameAs: z.string().optional(),
-    url: z.string().optional(),
-    logo: z.union([z.string(), imageObjectSchema]).optional(),
-    description: z.string().optional(),
-    address: z.union([z.string(), postalAddressSchema]).optional(),
-    contactPoint: contactPointSchema.optional(),
-  })
-  .strict();
-
-const personSchema = z
-  .object({
-    "@type": z.literal("Person"),
-    name: z.string(),
-    url: z.string().optional(),
-    image: z.union([z.string(), imageObjectSchema]).optional(),
-  })
-  .strict();
-
 const identifierSchema = z
   .object({
     "@type": z.literal("PropertyValue"),
@@ -191,6 +105,48 @@ const quantitativeValueSchema = z
     minValue: z.number().optional(),
     maxValue: z.number().optional(),
     unitText: z.enum(["HOUR", "DAY", "WEEK", "MONTH", "YEAR"]).optional(),
+  })
+  .strict();
+
+const aggregateRatingSchema = z
+  .object({
+    "@type": z.literal("AggregateRating"),
+    ratingValue: z.union([z.number(), z.string()]),
+    ratingCount: z.number().optional(),
+    reviewCount: z.number().optional(),
+    bestRating: z.union([z.number(), z.string()]).optional(),
+    worstRating: z.union([z.number(), z.string()]).optional(),
+  })
+  .strict();
+
+const organizationSchema = z
+  .object({
+    "@context": z.literal("https://schema.org/").optional(),
+    "@type": z.literal("Organization"),
+    name: z.string(),
+    url: z.string().optional(),
+    logo: z.union([z.string(), imageObjectSchema]).optional(),
+    description: z.string().optional(),
+    address: z.union([z.string(), postalAddressSchema]).optional(),
+    contactPoint: contactPointSchema.optional(),
+    email: z.string().optional(),
+    telephone: z.string().optional(),
+    numberOfEmployees: z
+      .union([quantitativeValueSchema, z.number()])
+      .optional(),
+    aggregateRating: aggregateRatingSchema.optional(),
+    sameAs: z.union([z.string(), z.array(z.string())]).optional(),
+    identifier: z.union([identifierSchema, z.string()]).optional(),
+    foundingDate: z.string().optional(),
+  })
+  .strict();
+
+const personSchema = z
+  .object({
+    "@type": z.literal("Person"),
+    name: z.string(),
+    url: z.string().optional(),
+    image: z.union([z.string(), imageObjectSchema]).optional(),
   })
   .strict();
 
@@ -287,9 +243,9 @@ const employmentTypeEnum = z.enum([
 /** Text fields that schema.org/JSON-LD permit as array-of-values. */
 const stringOrStringArray = z.union([z.string(), z.array(z.string())]);
 
-// ── google-job-post (exact schema.org JobPosting) ────────────────
+// ── job-post (exact schema.org JobPosting) ────────────────
 
-export const googleJobPostSchema = z
+export const jobPostSchema = z
   .object({
     // JSON-LD envelope
     "@context": z.literal("https://schema.org/"),
@@ -457,7 +413,7 @@ const brandColorsSchema = z
 
 export const jobSchema = z
   .object({
-    "google-job-post": googleJobPostSchema,
+    "job-post": jobPostSchema,
 
     images: z.array(imageRef).default([]),
     video: videoSchema.optional(),
@@ -482,3 +438,53 @@ export const jobSchema = z
   .strict();
 
 export type JobFrontmatter = z.infer<typeof jobSchema>;
+
+// ── Company ─────────────────────────────────────────────────────
+
+const companyVideoSchema = z.object({
+  thumbnail: z.string(),
+  title: z.string(),
+  presenter: z.string(),
+});
+
+const companyPerkSchema = z.object({
+  icon: z.string(),
+  text: z.string(),
+  color: z.string(),
+});
+
+const companyTeamMemberSchema = z.object({
+  name: z.string(),
+  role: z.string(),
+  avatar: z.string(),
+});
+
+const companyColorsSchema = z.object({
+  primary: z.string(),
+  secondary: z.string(),
+  primaryLight: z.string().optional(),
+  tertiary: z.string().optional(),
+  surface: z.string().optional(),
+});
+
+export const companySchema = z
+  .object({
+    organization: organizationSchema,
+
+    // Nutzy extensions (no schema.org equivalent)
+    slug: z.string(),
+    banner: z.string().optional(),
+    heroBackgroundImage: z.string().optional(),
+    mission: z
+      .string()
+      .nullish()
+      .transform((v) => v ?? ""),
+    videos: z.array(companyVideoSchema).default([]),
+    perks: z.array(companyPerkSchema).default([]),
+    team: z.array(companyTeamMemberSchema).default([]),
+    live: z.boolean().optional(),
+    colors: companyColorsSchema.optional(),
+  })
+  .strict();
+
+export type CompanyFrontmatter = z.infer<typeof companySchema>;
