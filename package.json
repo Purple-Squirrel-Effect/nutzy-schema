@@ -1,6 +1,6 @@
 {
   "name": "@nutzy/schema",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "Zod schemas and inferred TypeScript types for Nutzy jobs and companies",
   "license": "MIT",
   "author": "Pieter <pieter@nutzy.nl>",
