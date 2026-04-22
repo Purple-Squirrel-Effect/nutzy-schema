@@ -4,6 +4,10 @@
   "description": "Zod schemas and inferred TypeScript types for Nutzy jobs and companies",
   "license": "MIT",
   "author": "Pieter <pieter@nutzy.nl>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Purple-Squirrel-Effect/nutzy-schema.git"
+  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
