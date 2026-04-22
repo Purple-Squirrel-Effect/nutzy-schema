@@ -1,4 +1,4 @@
-# @nutzy-org/schema
+# @nutzy/schema
 
 Zod schemas and inferred TypeScript types for Nutzy jobs and companies.
 
@@ -8,7 +8,7 @@ import {
   companySchema,
   type JobFrontmatter,
   type CompanyFrontmatter,
-} from "@nutzy-org/schema";
+} from "@nutzy/schema";
 ```
 
 ## Updating the schema
@@ -42,5 +42,5 @@ Output lands in `dist/` (gitignored, npm-published).
 `zod` is a peer dependency — installers bring their own:
 
 ```bash
-npm i @nutzy-org/schema zod
+npm i @nutzy/schema zod
 ```
