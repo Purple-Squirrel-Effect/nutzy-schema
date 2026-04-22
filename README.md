@@ -3,7 +3,12 @@
 Zod schemas and inferred TypeScript types for Nutzy jobs and companies.
 
 ```ts
-import { jobSchema, companySchema, type JobFrontmatter, type CompanyFrontmatter } from "@nutzy-org/schema";
+import {
+  jobSchema,
+  companySchema,
+  type JobFrontmatter,
+  type CompanyFrontmatter,
+} from "@nutzy-org/schema";
 ```
 
 ## Updating the schema
@@ -18,13 +23,9 @@ import { jobSchema, companySchema, type JobFrontmatter, type CompanyFrontmatter 
    - `npm version patch` — bug fix or internal-only change
    - `npm version minor` — new optional field (backwards compatible)
    - `npm version major` — removed/renamed field, or stricter validation (breaking)
-5. **Push the tag**:
+5. **Push the tag** — this triggers [.github/workflows/publish.yml](.github/workflows/publish.yml) which publishes to npm via Trusted Publishers (no token needed).
    ```bash
    git push --follow-tags
-   ```
-6. **Create a GitHub release** for that tag — this triggers [.github/workflows/publish.yml](.github/workflows/publish.yml) which publishes to npm via Trusted Publishers (no token needed).
-   ```bash
-   gh release create v$(node -p "require('./package.json').version") --generate-notes
    ```
 
 ## Local development
