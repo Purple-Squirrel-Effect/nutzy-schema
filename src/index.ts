@@ -425,6 +425,21 @@ export const jobSchema = z
 
     images: z.array(imageRef).default([]),
     video: videoSchema.optional(),
+
+    /**
+     * Relative filename of a short video played in place of the
+     * check-circle success state after a candidate submits the apply
+     * form. Prefixed with https://ebnd.nl/ at render time, matching
+     * the video.src convention.
+     */
+    afterApplyVideoUrl: z.string().optional(),
+
+    /**
+     * Optional caption rendered under the after-apply video (e.g. the
+     * team member shown in the clip). Purely decorative.
+     */
+    afterApplyVideoTitle: z.string().optional(),
+
     testimonials: z.array(testimonialSchema).default([]),
     testimonialsHeadline: headlineLines.optional(),
     moodBoardHeadline: headlineLines.optional(),
