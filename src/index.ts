@@ -360,11 +360,10 @@ const testimonialSchema = z
   })
   .strict();
 
-const aboutWorkMessageSchema = z
+const aboutWorkBulletSchema = z
   .object({
-    message: z.string(),
-    placement: z.enum(["left", "right"]),
-    color: z.string().optional(),
+    icon: z.string().describe("Material Symbols icon name (e.g. 'videocam', 'bolt')"),
+    text: z.string(),
   })
   .strict();
 
@@ -383,10 +382,40 @@ const aiHighlightSchema = z
   })
   .strict();
 
+const testimonialsSectionSchema = z
+  .object({
+    headline: headlineLines.optional(),
+    items: z.array(testimonialSchema).default([]),
+  })
+  .strict();
+
+const moodBoardSectionSchema = z
+  .object({
+    headline: headlineLines.optional(),
+  })
+  .strict();
+
+const aboutWorkSectionSchema = z
+  .object({
+    headline: headlineLines.optional(),
+    description: z.string().optional(),
+    highlight: z.string().optional(),
+    bullets: z.array(aboutWorkBulletSchema).default([]),
+  })
+  .strict();
+
+const applyProcedureSectionSchema = z
+  .object({
+    headline: z.string().optional(),
+    steps: z.array(applyStepSchema).default([]),
+  })
+  .strict();
+
 const contactPersonSchema = z
   .object({
     name: z.string().optional(),
     role: z.string().optional(),
+    description: z.string().optional(),
     message: z.string().optional(),
     whatsapp: z.string().optional(),
     phone: z.string().optional(),
@@ -440,13 +469,10 @@ export const jobSchema = z
      */
     afterApplyVideoTitle: z.string().optional(),
 
-    testimonials: z.array(testimonialSchema).default([]),
-    testimonialsHeadline: headlineLines.optional(),
-    moodBoardHeadline: headlineLines.optional(),
-    aboutWorkMessages: z.array(aboutWorkMessageSchema).default([]),
-    aboutWorkHeadline: headlineLines.optional(),
-    applySteps: z.array(applyStepSchema).default([]),
-    applyProcedureHeadline: z.string().optional(),
+    testimonials: testimonialsSectionSchema.optional(),
+    moodBoard: moodBoardSectionSchema.optional(),
+    aboutWork: aboutWorkSectionSchema.optional(),
+    applyProcedure: applyProcedureSectionSchema.optional(),
     aiHighlight: aiHighlightSchema.optional(),
     contactPerson: contactPersonSchema.optional(),
 
