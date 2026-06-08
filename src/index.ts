@@ -476,6 +476,13 @@ export const jobSchema = z
     aiHighlight: aiHighlightSchema.optional(),
     contactPerson: contactPersonSchema.optional(),
 
+    /**
+     * Opt-in flag for the "Stel een vraag" (ask-a-question) CTA on the
+     * job page. Omitted/false hides the button; only set true where the
+     * employer wants to field candidate questions for this posting.
+     */
+    enableQuestionCta: z.boolean().optional(),
+
     vacationDays: z.number().optional(),
     promises: z.array(z.string()).default([]),
     tags: z.array(z.string()).default([]),
