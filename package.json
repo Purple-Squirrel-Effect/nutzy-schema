@@ -35,8 +35,5 @@
   "publishConfig": {
     "access": "public",
     "provenance": true
-  },
-  "dependencies": {
-    "@nutzy/schema": "^2.0.0"
   }
 }
