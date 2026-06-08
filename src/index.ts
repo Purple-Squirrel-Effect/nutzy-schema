@@ -360,13 +360,6 @@ const testimonialSchema = z
   })
   .strict();
 
-const aboutWorkBulletSchema = z
-  .object({
-    icon: z.string().describe("Material Symbols icon name (e.g. 'videocam', 'bolt')"),
-    text: z.string(),
-  })
-  .strict();
-
 const applyStepSchema = z
   .object({
     icon: z.string(),
@@ -392,15 +385,6 @@ const testimonialsSectionSchema = z
 const moodBoardSectionSchema = z
   .object({
     headline: headlineLines.optional(),
-  })
-  .strict();
-
-const aboutWorkSectionSchema = z
-  .object({
-    headline: headlineLines.optional(),
-    description: z.string().optional(),
-    highlight: z.string().optional(),
-    bullets: z.array(aboutWorkBulletSchema).default([]),
   })
   .strict();
 
@@ -471,7 +455,6 @@ export const jobSchema = z
 
     testimonials: testimonialsSectionSchema.optional(),
     moodBoard: moodBoardSectionSchema.optional(),
-    aboutWork: aboutWorkSectionSchema.optional(),
     applyProcedure: applyProcedureSectionSchema.optional(),
     aiHighlight: aiHighlightSchema.optional(),
     contactPerson: contactPersonSchema.optional(),
