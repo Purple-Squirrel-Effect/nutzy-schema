@@ -436,6 +436,13 @@ export const jobSchema = z
      */
     applyUrl: z.string().url().optional(),
 
+    /**
+     * Original source URL the posting was imported/scraped from, before
+     * any normalization. Distinct from `applyUrl` (the apply destination)
+     * and `job-post.url` (the canonical posting page).
+     */
+    originJobUrl: z.string().url().optional(),
+
     images: z.array(imageRef).default([]),
     video: videoSchema.optional(),
 
