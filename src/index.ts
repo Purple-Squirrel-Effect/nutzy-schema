@@ -281,6 +281,14 @@ export const jobPostSchema = z
       .optional(),
     employmentUnit: organizationSchema.optional(),
     workHours: z.string().optional(),
+    hours: z
+      .object({
+        value: z.number().optional(),
+        minValue: z.number().optional(),
+        maxValue: z.number().optional(),
+      })
+      .strict()
+      .optional(),
     jobImmediateStart: z.boolean().optional(),
     jobStartDate: z.string().optional(),
     jobDuration: z.union([durationSchema, quantitativeValueSchema]).optional(),
