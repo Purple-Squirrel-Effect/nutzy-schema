@@ -403,6 +403,54 @@ const applyProcedureSectionSchema = z
   })
   .strict();
 
+const workShiftSchema = z
+  .object({
+    /** Shift name as shown on the card, e.g. "Ochtenddienst". */
+    name: z.string(),
+
+    /**
+     * Colour accent for the shift card. When omitted the renderer derives
+     * it from the Dutch shift name (nacht → night, middag/avond → evening,
+     * ochtend/dag/morgen → morning), falling back to a neutral tint.
+     */
+    type: z.enum(["morning", "evening", "night", "neutral"]).optional(),
+
+    /** Material Symbols icon name overriding the type's default icon. */
+    icon: z.string().optional(),
+
+    /**
+     * The shift's headline time range, e.g. "07:00 – 14:00". Free-form
+     * text so vague schedules ("in overleg") render fine too.
+     */
+    time: z.string().optional(),
+
+    /** Label qualifying `time`, e.g. "Bezorgtijd". */
+    timeLabel: z.string().optional(),
+
+    /** Flexible clock-in window, e.g. "tussen 05:30 en 10:00 uur". */
+    start: z.string().optional(),
+
+    /** Flexible clock-out window, e.g. "tussen 12:00 en 15:30 uur". */
+    end: z.string().optional(),
+
+    /** Short blurb about the shift, e.g. "Toezicht, spoedzorg, rustige periode". */
+    description: z.string().optional(),
+  })
+  .strict();
+
+const workScheduleSectionSchema = z
+  .object({
+    headline: z.string().optional(),
+    shifts: z.array(workShiftSchema).default([]),
+
+    /**
+     * Footnote under the shift cards, e.g. the weekly morning/evening
+     * rotation. Rendered with a rotation icon.
+     */
+    note: z.string().optional(),
+  })
+  .strict();
+
 const contactPersonSchema = z
   .object({
     name: z.string().optional(),
@@ -471,6 +519,13 @@ export const jobSchema = z
     testimonials: testimonialsSectionSchema.optional(),
     moodBoard: moodBoardSectionSchema.optional(),
     applyProcedure: applyProcedureSectionSchema.optional(),
+
+    /**
+     * "Jouw werktijden" section: the job's shifts with their hours,
+     * flexible start/end windows, and an optional rotation note.
+     */
+    workSchedule: workScheduleSectionSchema.optional(),
+
     aiHighlight: aiHighlightSchema.optional(),
     contactPerson: contactPersonSchema.optional(),
 
