@@ -138,6 +138,13 @@ const organizationSchema = z
     sameAs: z.union([z.string(), z.array(z.string())]).optional(),
     identifier: z.union([identifierSchema, z.string()]).optional(),
     foundingDate: z.string().optional(),
+    /**
+     * Precomputed backing the logo should render against, derived once
+     * (offline) from the logo image's luminance: "light" = light backing for
+     * dark logos, "dark" = dark backing for light logos. Lets the UI skip
+     * per-view canvas luminance analysis.
+     */
+    logoBackground: z.enum(["dark", "light"]).optional(),
   })
   .strict();
 
