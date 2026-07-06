@@ -264,9 +264,11 @@ export const jobPostSchema = z
       .describe("Long-form role description (HTML/markdown)"),
     datePosted: z.string().describe("ISO 8601 date or datetime"),
     hiringOrganization: z.union([organizationSchema, personSchema]),
-    jobLocation: z.union([placeSchema, z.array(placeSchema)]).optional(), // Remote / location requirements
+    // Required per Google unless jobLocationType is TELECOMMUTE (enforced below)
+    jobLocation: z.union([placeSchema, z.array(placeSchema)]).optional(),
 
     jobLocationType: z.literal("TELECOMMUTE").optional(),
+    // Required per Google in place of jobLocation when jobLocationType is TELECOMMUTE (enforced below)
     applicantLocationRequirements: z
       .union([administrativeAreaSchema, z.array(administrativeAreaSchema)])
       .optional(), // Salary
@@ -349,7 +351,49 @@ export const jobPostSchema = z
       .optional(),
     sameAs: z.string().optional(),
   })
-  .strict();
+  .strict()
+  .superRefine((data, ctx) => {
+    // Per Google's JobPosting requirements: jobLocation is required unless
+    // the posting is fully remote (jobLocationType: TELECOMMUTE), in which
+    // case applicantLocationRequirements takes its place.
+    if (data.jobLocationType === "TELECOMMUTE") {
+      if (!data.applicantLocationRequirements) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["applicantLocationRequirements"],
+          message:
+            "applicantLocationRequirements is required when jobLocationType is TELECOMMUTE (Google JobPosting requirement)",
+        });
+      }
+      return;
+    }
+
+    if (!data.jobLocation) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["jobLocation"],
+        message:
+          "jobLocation is required unless jobLocationType is TELECOMMUTE (Google JobPosting requirement)",
+      });
+      return;
+    }
+
+    const places = Array.isArray(data.jobLocation)
+      ? data.jobLocation
+      : [data.jobLocation];
+    places.forEach((place, i) => {
+      if (!place.address.addressCountry) {
+        ctx.addIssue({
+          code: "custom",
+          path: Array.isArray(data.jobLocation)
+            ? ["jobLocation", i, "address", "addressCountry"]
+            : ["jobLocation", "address", "addressCountry"],
+          message:
+            "addressCountry is required within jobLocation.address (Google JobPosting requirement)",
+        });
+      }
+    });
+  });
 
 // ── Nutzy extensions (no schema.org equivalent) ──────────────────
 
