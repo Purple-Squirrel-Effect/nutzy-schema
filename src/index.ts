@@ -539,6 +539,13 @@ export const jobSchema = z
     _geoloc: geolocSchema.optional(),
     company_uuid: z.string().optional(),
     live: z.boolean().optional(),
+
+    /**
+     * Marks a promoted/sponsored vacancy. Sponsored jobs sort to the front
+     * of the feed (Algolia `desc(isSponsored)` custom ranking) and can be
+     * surfaced in dedicated placements. Omitted/false = organic listing.
+     */
+    isSponsored: z.boolean().optional(),
   })
   .strict();
 
