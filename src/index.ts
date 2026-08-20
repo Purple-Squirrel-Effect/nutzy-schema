@@ -22,6 +22,36 @@ const imageRef = z.object({
   alt: z.string().optional(),
 });
 
+/**
+ * Strict `YYYY-MM-DD` or full ISO-8601 timestamp (`…T…`) — zero-padded, no
+ * surrounding whitespace, no locale formats. A bare `z.string()` here passes
+ * ANY string (e.g. `"17-08-2026"` DD-MM-YYYY, `"05/04/2024"`, `"2025-1-1"`),
+ * which then breaks downstream `timestamptz` writes: Postgres reads
+ * dash-dates as MDY by default, so day-first values with day > 12 overflow
+ * the month field (`date/time field value out of range`).
+ */
+const isoDateOrDateTime = z
+  .string()
+  .regex(
+    /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})?)?$/,
+    "must be YYYY-MM-DD or a full ISO-8601 timestamp (…T…) — zero-padded, no locale format, no stray whitespace",
+  )
+  .refine((v) => {
+    // Date.parse rolls over out-of-range values (e.g. "2026-02-30" -> Mar 2)
+    // instead of rejecting them, so check the calendar fields by hand. The
+    // regex check above may not have matched yet (zod runs all checks
+    // regardless of earlier failures), so tolerate no match here.
+    const m = v.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (!m) return true;
+    const [, y, mo, d] = m;
+    const year = Number(y);
+    const month = Number(mo);
+    const day = Number(d);
+    if (month < 1 || month > 12) return false;
+    const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
+    return day >= 1 && day <= daysInMonth;
+  }, "must be a valid calendar date");
+
 // ── Schema.org building blocks (typed per https://schema.org) ──
 
 const countrySchema = z
@@ -262,7 +292,9 @@ export const jobPostSchema = z
     description: z
       .string()
       .describe("Long-form role description (HTML/markdown)"),
-    datePosted: z.string().describe("ISO 8601 date or datetime"),
+    datePosted: isoDateOrDateTime.describe(
+      "Strict ISO 8601 date (YYYY-MM-DD) or datetime",
+    ),
     hiringOrganization: z.union([organizationSchema, personSchema]),
     // Required per Google unless jobLocationType is TELECOMMUTE (enforced below)
     jobLocation: z.union([placeSchema, z.array(placeSchema)]).optional(),
