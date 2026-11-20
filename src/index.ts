@@ -497,6 +497,19 @@ const applyProcedureSectionSchema = z
   })
   .strict();
 
+const faqItemSchema = z
+  .object({
+    question: z.string().min(1),
+    /**
+     * Plain text. `**bold**` is supported for a short lead-in, e.g.
+     * "**Nee.** Je wordt ingewerkt op de werkvloer."
+     */
+    answer: z.string().min(1),
+    /** Material Symbols name (or an emoji). Omitted = generic help icon. */
+    icon: z.string().optional(),
+  })
+  .strict();
+
 const contactPersonSchema = z
   .object({
     name: z.string().optional(),
@@ -575,11 +588,17 @@ export const jobSchema = z
     contactPerson: contactPersonSchema.optional(),
 
     /**
-     * Opt-in flag for the "Stel een vraag" (ask-a-question) CTA on the
-     * job page. Omitted/false hides the button; only set true where the
-     * employer wants to field candidate questions for this posting.
+     * Opt-in flag for the "Stel een vraag" CTA on the job page, which
+     * opens the vacancy's FAQ (see `faq`). Omitted/false hides the button.
      */
     enableQuestionCta: z.boolean().optional(),
+
+    /**
+     * Frequently asked questions shown on the page behind the "Stel een
+     * vraag" CTA. Omitted/empty = the app falls back to a generic set of
+     * questions that fits any vacancy.
+     */
+    faq: z.array(faqItemSchema).optional(),
 
     vacationDays: z.number().optional(),
     promises: z.array(z.string()).default([]),
