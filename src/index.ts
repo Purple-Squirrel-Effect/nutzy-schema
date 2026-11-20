@@ -432,6 +432,17 @@ export const jobPostSchema = z
 const videoSchema = z
   .object({
     src: z.string().describe("Relative video filename, not a UUID"),
+    /**
+     * Short, muted teaser clip that plays as the looping background on the
+     * job page (currently the mobile hero) instead of the full `src` video.
+     * Relative filename prefixed with https://ebnd.nl/ at render time, like
+     * `src`. Mainly for YouTube `src` videos, whose embed is heavy and can't
+     * be cropped; the full `src` still opens from the play button.
+     */
+    loopSrc: z
+      .string()
+      .optional()
+      .describe("Relative filename of a short muted loop, not a UUID"),
     title: headlineLines,
     subtitle: z
       .string()
@@ -555,6 +566,12 @@ export const jobSchema = z
     moodBoard: moodBoardSectionSchema.optional(),
     applyProcedure: applyProcedureSectionSchema.optional(),
     aiHighlight: aiHighlightSchema.optional(),
+    /**
+     * One short free-text line about what makes this vacancy stand out
+     * (e.g. "40% nachttoeslag"). Rendered as the leading chip in the job
+     * page hero. Omitted/empty = no chip.
+     */
+    highlight: z.string().optional(),
     contactPerson: contactPersonSchema.optional(),
 
     /**
@@ -620,6 +637,11 @@ export const companySchema = z
     perks: z.array(companyPerkSchema).default([]),
     team: z.array(companyTeamMemberSchema).default([]),
     live: z.boolean().optional(),
+    /**
+     * Manually-curated trust signal: shows a "Populaire werkgever" chip on
+     * this company's job pages. Omitted/false = no chip.
+     */
+    isPopularEmployer: z.boolean().optional(),
     colors: companyColorsSchema.optional(),
   })
   .strict();
