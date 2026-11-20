@@ -34,6 +34,7 @@
   },
   "publishConfig": {
     "access": "public",
-    "provenance": true
+    "provenance": true,
+    "tag": "legacy-4"
   }
 }
