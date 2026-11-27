@@ -539,6 +539,29 @@ const brandColorsSchema = z
 
 // ── Composed job schema ──────────────────────────────────────────
 
+/**
+ * "Geheime info": extra content a vacancy opts in to share with candidates via
+ * the Nutzy WhatsApp bot and the unlisted /geheim page. Omit the key to keep
+ * the feature off for this job (no WhatsApp button, /geheim 404s).
+ */
+const secretInfoSchema = z
+  .object({
+    /** Opening line of the WhatsApp message and the /geheim page header. */
+    intro: z.string().optional(),
+    tips: z.array(z.string()).default([]),
+    /** Cloudflare Images UUIDs (or absolute URLs); WhatsApp sends the first 3. */
+    images: z.array(imageRef).default([]),
+    /** Shown on the /geheim page only, never sent through WhatsApp. */
+    video: z
+      .object({
+        src: z.string().describe("Relative video filename, not a UUID"),
+        subtitle: z.string().optional(),
+      })
+      .strict()
+      .optional(),
+  })
+  .strict();
+
 export const jobSchema = z
   .object({
     "job-post": jobPostSchema,
@@ -600,6 +623,9 @@ export const jobSchema = z
      */
     faq: z.array(faqItemSchema).optional(),
 
+    /** Opt-in "geheime info" for this vacancy; omitted = feature off. */
+    secretInfo: secretInfoSchema.optional(),
+
     vacationDays: z.number().optional(),
     promises: z.array(z.string()).default([]),
     tags: z.array(z.string()).default([]),
@@ -640,29 +666,6 @@ const companyColorsSchema = z.object({
   surface: z.string().optional(),
 });
 
-/**
- * "Geheime info": extra content a company opts in to share with candidates via
- * the Nutzy WhatsApp bot and the unlisted /geheim page. Omit the key to keep
- * the feature off for this company (no WhatsApp button, /geheim 404s).
- */
-const secretInfoSchema = z
-  .object({
-    /** Opening line of the WhatsApp message and the /geheim page header. */
-    intro: z.string().optional(),
-    tips: z.array(z.string()).default([]),
-    /** Cloudflare Images UUIDs (or absolute URLs); WhatsApp sends the first 3. */
-    images: z.array(imageRef).default([]),
-    /** Shown on the /geheim page only, never sent through WhatsApp. */
-    video: z
-      .object({
-        src: z.string().describe("Relative video filename, not a UUID"),
-        subtitle: z.string().optional(),
-      })
-      .strict()
-      .optional(),
-  })
-  .strict();
-
 export const companySchema = z
   .object({
     organization: organizationSchema,
@@ -685,7 +688,6 @@ export const companySchema = z
      */
     isPopularEmployer: z.boolean().optional(),
     colors: companyColorsSchema.optional(),
-    secretInfo: secretInfoSchema.optional(),
   })
   .strict();
 
